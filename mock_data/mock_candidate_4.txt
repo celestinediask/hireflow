@@ -1,0 +1,79 @@
+============================================================
+MOCK CANDIDATE DATA — INDIA
+============================================================
+
+--- SESSION ---
+candidate_name:   Deepak Yadav
+candidate_email:  deepak.yadav1995@yahoo.com
+status:           completed
+wpm:              28
+accuracy:         61
+
+--- PRE-SCREENING ---
+full_name:         Deepak Yadav
+dob:               03-Feb-1995
+phone:             +91 99887 65432
+email:             deepak.yadav1995@yahoo.com
+location:          Kanpur, Uttar Pradesh
+qualification:     B.Sc. – Computer Science
+institution:       CSJM University, Kanpur
+graduation_year:   2018
+last_ctc:          ₹2.4 LPA
+inhand_salary:     ₹18,000 / month
+expected_salary:   ₹6 LPA
+notice_period:     Immediate
+job_switches:      5
+
+work_experience:
+  • Webtech Solutions, Kanpur — Junior Developer (Mar 2018 – Sep 2018)
+    Basic HTML and CSS work for small business websites. Left after 6 months.
+
+  • Freelance, Kanpur (Oct 2018 – Jun 2019)
+    Did small WordPress projects. Inconsistent work, no major clients.
+
+  • DigiSoft Pvt. Ltd., Kanpur — Web Developer (Jul 2019 – Dec 2019)
+    Frontend tasks using jQuery. Left due to salary issues.
+
+  • NextGen IT, Lucknow — Developer (Jan 2020 – Aug 2021)
+    Mixed role involving data entry and minor bug fixes. Laid off.
+
+  • TechPoint Services, Kanpur — Software Developer (Sep 2021 – Present)
+    Working on maintaining a legacy PHP application. Minimal new development.
+
+reason_leaving:
+  Looking for a better salary and a bigger city. My current company does not
+  have any growth and the work is mostly maintenance with no new features.
+
+career_changes:
+  Moved between several small companies and freelance work. Have not had a
+  stable long-term role. Shifted from frontend to PHP maintenance without
+  a clear plan.
+
+--- INTERVIEW Q&A ---
+
+Q1: What is fullstack?
+A:  Fullstack is when you work on both frontend and backend I think. I have
+    mostly done frontend. Backend is like the server part. I am not very sure
+    about the full details but I know it means working on both sides of the
+    website. I have not done much backend work myself but I am willing to learn
+    it if given the chance.
+
+Q2: What is the difference between frontend and backend?
+A:  Frontend is HTML CSS and the design part that users see. Backend is the
+    database and server side. I have worked mostly on frontend using HTML CSS
+    and some jQuery. I know PHP a little bit from my last job but I did not
+    write much code there, mostly copied and fixed small bugs. I think backend
+    is more complicated and I have not studied it properly yet.
+
+Q3: What is React?
+A:  React is a JavaScript framework I have heard about. I have not used it in
+    any project but I have watched some YouTube videos on it. It uses components
+    I think. My current company uses PHP so I did not get a chance to learn
+    React practically. I am planning to learn it but have not started yet. I
+    know it is very popular and many companies use it so I want to pick it up.
+
+--- TYPING TEST ---
+wpm:       28
+accuracy:  61%
+
+============================================================

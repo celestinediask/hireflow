@@ -1,0 +1,82 @@
+============================================================
+MOCK CANDIDATE DATA — INDIA
+============================================================
+
+--- SESSION ---
+candidate_name:   Ananya Krishnamurthy
+candidate_email:  ananya.krishna@gmail.com
+status:           completed
+wpm:              61
+accuracy:         94
+
+--- PRE-SCREENING ---
+full_name:         Ananya Krishnamurthy
+dob:               22-Jun-1999
+phone:             +91 87654 32109
+email:             ananya.krishna@gmail.com
+location:          Chennai, Tamil Nadu
+qualification:     B.E. – Information Technology
+institution:       Anna University, Chennai
+graduation_year:   2021
+last_ctc:          ₹4.8 LPA
+inhand_salary:     ₹37,000 / month
+expected_salary:   ₹7.5 LPA
+notice_period:     15 days
+job_switches:      1
+
+work_experience:
+  • Cognizant Technology Solutions, Chennai — Programmer Analyst (Aug 2021 – Present)
+    Working on a React and Node.js based portal for a US retail client.
+    Responsible for frontend component development, API integration, and
+    writing unit tests using Jest. Also involved in Agile ceremonies and
+    bi-weekly sprint releases.
+
+reason_leaving:
+  I have been with Cognizant for almost 3 years on the same project and feel
+  I have plateaued in terms of growth. I want to join a product-based company
+  where I can work on a diverse range of features and take on more end-to-end
+  ownership rather than being limited to one module.
+
+career_changes:
+  I started directly in a fullstack role after campus placement. No major domain
+  shift, but I have steadily moved from purely frontend tasks in my first year
+  to handling both frontend and backend responsibilities in my current role.
+
+--- INTERVIEW Q&A ---
+
+Q1: What is fullstack?
+A:  Fullstack development means being able to work on both the frontend and the
+    backend of a web application. The frontend covers everything the user sees
+    and interacts with in the browser, like buttons, forms, and layouts. The
+    backend includes the server, APIs, and database that power the application
+    behind the scenes. A fullstack developer can handle the complete cycle of
+    a feature from database design to what appears on screen. In my current
+    role I work across both layers using React on the frontend and Node.js
+    with PostgreSQL on the backend, so I am comfortable on the full stack.
+
+Q2: What is the difference between frontend and backend?
+A:  Frontend is the client side — the part of the application that runs in the
+    user's browser. It is built using HTML for structure, CSS for styling, and
+    JavaScript for interactivity. Frameworks like React or Angular make it
+    easier to build complex UIs. Backend is the server side that the user never
+    directly sees. It handles things like authentication, business logic, storing
+    and retrieving data from databases, and sending responses to the frontend
+    through APIs. The two communicate through HTTP requests, usually in JSON
+    format. Both need to work together seamlessly for a good user experience.
+
+Q3: What is React?
+A:  React is a JavaScript library built by Meta for creating user interfaces. It
+    is based on the concept of components — small, reusable pieces of UI that
+    each manage their own state and logic. React uses a virtual DOM which means
+    it only updates the actual DOM where necessary, making it very efficient.
+    State management in React can be handled using built-in hooks like useState
+    and useEffect, or external libraries like Redux for more complex apps. I use
+    React daily in my current project to build reusable UI components and have
+    experience integrating it with REST APIs and handling things like loading
+    states, error boundaries, and conditional rendering.
+
+--- TYPING TEST ---
+wpm:       61
+accuracy:  94%
+
+============================================================

@@ -1,0 +1,86 @@
+============================================================
+MOCK CANDIDATE DATA — INDIA
+============================================================
+
+--- SESSION ---
+candidate_name:   Kavya Nair
+candidate_email:  kavya.nair.dev@gmail.com
+status:           completed
+wpm:              52
+accuracy:         83
+
+--- PRE-SCREENING ---
+full_name:         Kavya Nair
+dob:               14-Mar-1997
+phone:             +91 96321 45678
+email:             kavya.nair.dev@gmail.com
+location:          Pune, Maharashtra
+qualification:     B.E. – Electronics and Telecommunication
+institution:       Pune University (SPPU)
+graduation_year:   2019
+last_ctc:          ₹6.2 LPA
+inhand_salary:     ₹48,000 / month
+expected_salary:   ₹9 LPA
+notice_period:     30 days
+job_switches:      2
+
+work_experience:
+  • Persistent Systems, Pune — Associate Software Engineer (Aug 2019 – Nov 2021)
+    Worked on a Java Spring Boot microservices project for a US logistics client.
+    Wrote REST APIs, handled unit testing with JUnit, and assisted in
+    deployments on AWS EC2. Gained exposure to Docker in the later stages.
+
+  • Synechron, Pune — Software Engineer (Dec 2021 – Present)
+    Fullstack development on an internal banking dashboard using React on the
+    frontend and Node.js with Express on the backend. Responsible for building
+    new UI modules, writing backend APIs, and integrating with third-party
+    payment gateways.
+
+reason_leaving:
+  I have been in service-based companies since graduation and want to move
+  to a product company where I can have more ownership of what I build. My
+  current role is good but the project scope is limited and there is not
+  much room to explore new technologies.
+
+career_changes:
+  Started in Java backend at Persistent and transitioned to fullstack with
+  React and Node.js at Synechron. The shift was driven by interest in
+  frontend development. The change has been smooth and I now prefer working
+  across both layers.
+
+--- INTERVIEW Q&A ---
+
+Q1: What is fullstack?
+A:  Fullstack means working on both the frontend and the backend of a web
+    application. The frontend is what the user sees and interacts with in
+    the browser, and the backend handles the data, business logic, and
+    server-side operations. A fullstack developer can take a feature from
+    the database all the way to the user interface. In my current role I
+    do this regularly — I work on React components for the UI and write
+    Node.js APIs that serve data to those components.
+
+Q2: What is the difference between frontend and backend?
+A:  Frontend is the client-side code that runs in the browser. It includes
+    HTML for structure, CSS for styling, and JavaScript for making things
+    interactive. Frameworks like React or Vue help manage complex UIs.
+    Backend is server-side and handles things the user never directly sees —
+    authentication, database queries, business logic, and sending data to
+    the frontend through APIs. They communicate over HTTP usually using
+    JSON. I have worked on both sides so I understand how they fit together,
+    though I am more confident on the backend side from my earlier Java work.
+
+Q3: What is React?
+A:  React is a JavaScript library from Meta for building user interfaces.
+    It works with a component-based model where you break the UI into small
+    reusable pieces. Each component manages its own state and React re-renders
+    only the parts that change, which makes it efficient. I use hooks like
+    useState and useEffect regularly. One thing I had to get used to was the
+    unidirectional data flow — props go down and events go up. I have not
+    used Redux much; in our project we use React Context for shared state
+    which has been sufficient so far.
+
+--- TYPING TEST ---
+wpm:       52
+accuracy:  83%
+
+============================================================

@@ -1,0 +1,253 @@
+<%- include('../layout-wide') %>
+    <style>
+      .section-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        user-select: none;
+        padding: 10px 0;
+        border-bottom: 1px solid #2a2a4a;
+        margin-bottom: 0;
+      }
+      .section-toggle h2 { margin-bottom: 0; }
+      .chevron {
+        color: #888;
+        font-size: 13px;
+        transition: transform 0.2s;
+      }
+      .section-body { padding-top: 16px; }
+      .toast {
+        position: fixed;
+        bottom: 28px;
+        right: 28px;
+        background: #1a3d1a;
+        color: #2ecc71;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 0.25s, transform 0.25s;
+        pointer-events: none;
+        z-index: 999;
+      }
+      .toast.show { opacity: 1; transform: translateY(0); }
+    </style>
+
+    <div id="toast" class="toast"></div>
+
+    <div class="flex-between mb-20">
+      <h1><%= template.title %></h1>
+    </div>
+
+    <div class="mb-20">
+      <div class="section-toggle" onclick="toggleSection('questions', this)">
+        <h2 style="font-size:18px">Questions <span style="color:#555;font-size:13px;font-weight:400">(<%= questions.length %>)</span></h2>
+        <span class="chevron" id="chevron-questions">&#9660;</span>
+      </div>
+      <div class="section-body" id="questions" style="display:none">
+        <table class="mb-20">
+          <thead>
+            <tr><th>#</th><th>Question</th></tr>
+          </thead>
+          <tbody>
+            <% questions.forEach((q, i) => { %>
+              <tr><td><%= i + 1 %></td><td style="color:#e0e0e0"><%= q.question_text %></td></tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mb-20">
+      <div class="section-toggle" onclick="toggleSection('links', this)">
+        <h2 style="font-size:18px">Interview Links</h2>
+        <span class="chevron" id="chevron-links">&#9660;</span>
+      </div>
+      <div class="section-body" id="links" style="display:none">
+        <form method="POST" action="/admin/templates/<%= template.id %>/links" class="mb-20">
+          <button type="submit" class="btn btn-small">+ Generate New Link</button>
+        </form>
+        <% const pendingSessions = sessions.filter(s => s.status === 'pending'); %>
+        <% if (pendingSessions.length > 0) { %>
+          <% pendingSessions.forEach(s => { %>
+            <div class="link-box">
+              <code id="link-<%= s.id %>"><%= typeof BASE_URL !== 'undefined' ? BASE_URL : 'http://localhost:3000' %>/interview/<%= s.token %></code>
+              <button class="btn btn-small btn-secondary" onclick="copyLink('link-<%= s.id %>')">Copy</button>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <p class="text-muted">No pending links. Generate one above.</p>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Candidates -->
+    <%
+      const activeSessions = sessions.filter(s => s.status !== 'pending');
+      const rankedMap = {};
+      ranked.forEach(r => { rankedMap[r.session_id] = r; });
+      const merged = [
+        ...ranked.map(r => ({ s: activeSessions.find(s => s.id === r.session_id), r })).filter(x => x.s),
+        ...activeSessions.filter(s => !rankedMap[s.id]).map(s => ({ s, r: null }))
+      ];
+    %>
+    <div style="margin-bottom:28px">
+      <div class="flex-between" style="margin-bottom:12px">
+        <h2 style="margin-bottom:0">Candidates <span style="color:#555;font-size:13px;font-weight:400">(<%= activeSessions.length %>)</span></h2>
+        <button class="btn btn-small" id="auto-score-btn" style="background:#2a4a2a;color:#2ecc71;border:1px solid #2ecc71"
+          onclick="autoScore()">
+          &#9889; Auto-Score All
+        </button>
+      </div>
+      <% if (ranked.length > 0) { %>
+        <div style="margin-bottom:8px">
+          <span style="color:#888;font-size:13px"><%= ranked.length %> scored &bull; <%= ranked.filter(r => r.shortlisted).length %> shortlisted</span>
+        </div>
+      <% } %>
+      <% if (merged.length > 0) { %>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:48px">Rank</th>
+              <th>Candidate</th>
+              <th>Score</th>
+              <th style="width:60px">Exp</th>
+              <th style="width:60px">Skills</th>
+              <th style="width:60px">Stab</th>
+              <th style="width:60px">Comm</th>
+              <th style="width:60px">Fit</th>
+              <th style="width:90px">Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% merged.forEach(({ s, r }) => { %>
+              <tr style="<%= r && r.rank <= 10 ? 'background:rgba(74,108,247,0.05)' : '' %>">
+                <td>
+                  <% if (!r) { %>
+                    <span style="color:#555;font-size:13px">—</span>
+                  <% } else if (r.rank === 1) { %>
+                    <span style="background:#f5a623;color:#000;font-weight:700;font-size:11px;padding:2px 7px;border-radius:4px">#1</span>
+                  <% } else if (r.rank === 2) { %>
+                    <span style="background:#aaa;color:#000;font-weight:700;font-size:11px;padding:2px 7px;border-radius:4px">#2</span>
+                  <% } else if (r.rank === 3) { %>
+                    <span style="background:#cd7f32;color:#fff;font-weight:700;font-size:11px;padding:2px 7px;border-radius:4px">#3</span>
+                  <% } else { %>
+                    <span style="color:#666;font-size:13px">#<%= r.rank %></span>
+                  <% } %>
+                </td>
+                <td>
+                  <div style="color:#e0e0e0;font-weight:500"><%= s.candidate_name || '—' %></div>
+                  <div style="color:#666;font-size:12px"><%= s.candidate_email || '' %></div>
+                </td>
+                <td>
+                  <% if (r) { %>
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <span style="font-weight:700;color:<%= r.effectiveTotal >= 70 ? '#2ecc71' : r.effectiveTotal >= 50 ? '#f5a623' : '#e74c3c' %>;font-size:15px"><%= r.effectiveTotal %></span>
+                      <span style="color:#555;font-size:12px">/100</span>
+                      <% if (r.override_total != null) { %><span style="font-size:11px;color:#888;font-style:italic">override</span><% } %>
+                    </div>
+                    <div style="background:#0f3460;border-radius:3px;height:4px;width:80px;margin-top:4px;overflow:hidden">
+                      <div style="height:100%;width:<%= r.effectiveTotal %>%;background:<%= r.effectiveTotal >= 70 ? '#2ecc71' : r.effectiveTotal >= 50 ? '#f5a623' : '#e74c3c' %>"></div>
+                    </div>
+                  <% } else { %>
+                    <span style="color:#555;font-size:13px">—</span>
+                  <% } %>
+                </td>
+                <td style="color:#b0b0b0;font-size:13px"><%= r ? r.experience : '' %></td>
+                <td style="color:#b0b0b0;font-size:13px"><%= r ? r.skills : '' %></td>
+                <td style="color:#b0b0b0;font-size:13px"><%= r ? r.stability : '' %></td>
+                <td style="color:#b0b0b0;font-size:13px"><%= r ? r.communication : '' %></td>
+                <td style="color:#b0b0b0;font-size:13px"><%= r ? r.role_fit : '' %></td>
+                <td>
+                  <% if (r && r.shortlisted) { %>
+                    <span style="color:#2ecc71;font-size:12px;font-weight:600">&#9733; Listed</span>
+                  <% } else if (r && r.rank <= 10) { %>
+                    <span style="color:#4a6cf7;font-size:12px">Top 10</span>
+                  <% } else { %>
+                    <span class="badge badge-<%= s.status %>"><%= s.status %></span>
+                  <% } %>
+                </td>
+                <td><a href="/admin/sessions/<%= s.id %>">View</a></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <p class="text-muted">No candidates have started an interview yet.</p>
+      <% } %>
+    </div>
+
+    <div class="mt-20 flex-between">
+      <a href="/admin">&larr; Back to dashboard</a>
+      <form method="POST" action="/admin/templates/<%= template.id %>/delete" onsubmit="return confirm('Delete this template?')">
+        <button type="submit" class="btn btn-danger btn-small">Delete Template</button>
+      </form>
+    </div>
+
+    <script>
+      function toggleSection(id, header) {
+        const body = document.getElementById(id);
+        const chevron = document.getElementById('chevron-' + id);
+        const open = body.style.display !== 'none';
+        body.style.display = open ? 'none' : 'block';
+        chevron.style.transform = open ? '' : 'rotate(-90deg)';
+      }
+
+      function copyLink(id) {
+        const text = document.getElementById(id).textContent.trim();
+        navigator.clipboard.writeText(text).then(() => showToast('Link copied to clipboard'));
+      }
+
+      function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => t.classList.remove('show'), 2500);
+      }
+
+      async function autoScore() {
+        const btn = document.getElementById('auto-score-btn');
+        btn.disabled = true;
+        btn.textContent = 'Scoring\u2026';
+        try {
+          const res = await fetch('/admin/templates/<%= template.id %>/auto-score', { method: 'POST' });
+          const data = await res.json();
+          if (!res.ok) {
+            showToast(data.error || 'Scoring failed. Please try again.');
+            btn.disabled = false;
+            btn.innerHTML = '&#9889; Auto-Score All';
+            return;
+          }
+          window.location.href = '/admin/templates/<%= template.id %>?auto_scored=' + data.scored + '&failed=' + data.failed;
+        } catch (err) {
+          showToast('Scoring failed. Please try again.');
+          btn.disabled = false;
+          btn.innerHTML = '&#9889; Auto-Score All';
+        }
+      }
+
+      window.addEventListener('DOMContentLoaded', function() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('auto_scored') !== null) {
+          const n = parseInt(params.get('auto_scored')) || 0;
+          const f = parseInt(params.get('failed')) || 0;
+          showToast(f > 0 ? `${n} scored, ${f} failed` : `${n} candidate(s) scored by AI`);
+          history.replaceState(null, '', window.location.pathname);
+        }
+        <% if (linked) { %>
+          const body = document.getElementById('links');
+          const chevron = document.getElementById('chevron-links');
+          body.style.display = 'block';
+          chevron.style.transform = 'rotate(-90deg)';
+          showToast('New interview link generated');
+        <% } %>
+      });
+    </script>
+  </div>
+</body>
+</html>

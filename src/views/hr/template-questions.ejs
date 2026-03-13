@@ -1,0 +1,22 @@
+<%- include('../layout-hr') %>
+    <h1 class="mb-20">Questions</h1>
+
+    <% if (questions.length === 0) { %>
+      <p class="text-muted">No questions found.</p>
+    <% } else { %>
+      <table>
+        <thead><tr><th>#</th><th>Question</th></tr></thead>
+        <tbody>
+          <% questions.forEach((q, i) => { %>
+            <tr>
+              <td style="width:40px;color:#555"><%= i + 1 %></td>
+              <td style="color:#e0e0e0"><%= q.question_text %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+    </main>
+  </div>
+</body>
+</html>

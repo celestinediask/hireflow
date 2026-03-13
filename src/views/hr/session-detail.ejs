@@ -1,0 +1,214 @@
+<%- include('../layout-wide') %>
+    <div class="flex-between mb-20">
+      <h1 style="margin-bottom:0">Interview Transcript</h1>
+      <div>
+        <a href="/hr/templates/<%= template.id %>" class="btn btn-secondary btn-small">&larr; Sessions</a>
+        &nbsp;
+        <a href="/hr" class="btn btn-secondary btn-small">Dashboard</a>
+      </div>
+    </div>
+
+    <!-- Session Overview -->
+    <div style="background:#0f3460;border-radius:8px;padding:16px 20px;margin-bottom:20px;display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;">
+      <div><span style="color:#888;font-size:13px">Candidate</span><br><span style="color:#e0e0e0;font-weight:600"><%= session.candidate_name || '—' %></span></div>
+      <div><span style="color:#888;font-size:13px">Email</span><br><span style="color:#e0e0e0"><%= session.candidate_email || '—' %></span></div>
+      <div><span style="color:#888;font-size:13px">Template</span><br><span style="color:#e0e0e0"><%= template.title %></span></div>
+      <div><span style="color:#888;font-size:13px">Status</span><br><span class="badge badge-<%= session.status %>"><%= session.status.replace(/_/g, ' ') %></span></div>
+      <% if (session.started_at) { %><div><span style="color:#888;font-size:13px">Started</span><br><span style="color:#e0e0e0"><%= session.started_at %></span></div><% } %>
+      <% if (session.completed_at) { %><div><span style="color:#888;font-size:13px">Completed</span><br><span style="color:#e0e0e0"><%= session.completed_at %></span></div><% } %>
+    </div>
+
+    <!-- Scoring Form -->
+    <div style="background:#16213e;border:1px solid #2a2a4a;border-radius:8px;padding:20px;margin-bottom:20px">
+      <div class="flex-between" style="margin-bottom:16px">
+        <div style="font-size:15px;font-weight:600;color:#e0e0e0">Score Candidate</div>
+        <% if (scored) { %><span style="color:#2ecc71;font-size:13px">&#10003; Saved</span><% } %>
+        <% if (score && !scored) { %><span style="color:#888;font-size:12px">Last saved: <%= score.updated_at %></span><% } %>
+      </div>
+
+      <form method="POST" action="/hr/sessions/<%= session.id %>/score">
+        <% const factors = [
+          ['experience',    'Experience',    score ? score.experience    : 0],
+          ['skills',        'Skills',        score ? score.skills        : 0],
+          ['stability',     'Stability',     score ? score.stability     : 0],
+          ['communication', 'Communication', score ? score.communication : 0],
+          ['role_fit',      'Role Fit',      score ? score.role_fit      : 0],
+        ]; %>
+
+        <% factors.forEach(([name, label, val]) => { %>
+        <div style="display:grid;grid-template-columns:140px 1fr 36px 30px;align-items:center;gap:8px;margin-bottom:10px">
+          <label style="color:#b0b0b0;font-size:13px"><%= label %></label>
+          <input type="range" name="<%= name %>" min="0" max="20" value="<%= val %>"
+            oninput="syncScore(this, '<%= name %>')" style="accent-color:#4a6cf7;cursor:pointer">
+          <input type="number" id="num-<%= name %>" min="0" max="20" value="<%= val %>"
+            oninput="syncScoreNum(this, '<%= name %>')"
+            style="padding:2px 4px;border:1px solid #2a2a4a;border-radius:4px;background:#0f3460;color:#e0e0e0;font-size:13px;width:100%;text-align:center">
+          <span style="color:#555;font-size:12px">/20</span>
+        </div>
+        <% }); %>
+
+        <!-- Computed total bar -->
+        <div style="border-top:1px solid #2a2a4a;margin:14px 0 16px;padding-top:14px">
+          <div class="flex-between" style="margin-bottom:6px">
+            <span style="color:#888;font-size:13px">Computed Total</span>
+            <span id="computed-total" style="font-size:20px;font-weight:700;color:#4a6cf7">0 / 100</span>
+          </div>
+          <div style="background:#0f3460;border-radius:4px;height:6px;overflow:hidden">
+            <div id="score-bar" style="height:100%;background:#4a6cf7;transition:width 0.2s;width:0%"></div>
+          </div>
+        </div>
+
+        <!-- Override total -->
+        <div style="margin-bottom:12px">
+          <label style="color:#b0b0b0;font-size:13px;display:block;margin-bottom:5px">Override Total <span style="color:#555">(0–100, leave blank to use computed)</span></label>
+          <input type="number" name="override_total" min="0" max="100"
+            value="<%= score && score.override_total != null ? score.override_total : '' %>"
+            placeholder="e.g. 78"
+            style="width:160px;padding:8px 12px;border:1px solid #2a2a4a;border-radius:6px;background:#0f3460;color:#e0e0e0;font-size:14px">
+        </div>
+
+        <!-- Notes -->
+        <div style="margin-bottom:12px">
+          <label style="color:#b0b0b0;font-size:13px;display:block;margin-bottom:5px">AI Generated Notes</label>
+          <textarea name="notes" rows="4" placeholder="Optional internal notes..."
+            style="width:100%;padding:8px 12px;border:1px solid #2a2a4a;border-radius:6px;background:#0f3460;color:#e0e0e0;font-size:14px;resize:vertical;font-family:inherit"><%= score && score.notes ? score.notes : '' %></textarea>
+        </div>
+
+        <!-- Shortlist -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+          <input type="checkbox" name="shortlisted" id="shortlisted"
+            <%= score && score.shortlisted ? 'checked' : '' %>
+            style="width:16px;height:16px;accent-color:#4a6cf7;cursor:pointer">
+          <label for="shortlisted" style="color:#b0b0b0;font-size:14px;cursor:pointer">Shortlist this candidate</label>
+        </div>
+
+        <button type="submit" class="btn btn-small">Save Score</button>
+      </form>
+    </div>
+
+    <!-- HR Notes -->
+    <div style="background:#16213e;border:1px solid #2a2a4a;border-radius:8px;padding:20px;margin-bottom:20px">
+      <div style="font-size:15px;font-weight:600;color:#e0e0e0;margin-bottom:12px">HR Notes</div>
+      <form method="POST" action="/hr/sessions/<%= session.id %>/hr-notes">
+        <textarea name="hr_notes" rows="4" placeholder="Add your notes here..."
+          style="width:100%;padding:8px 12px;border:1px solid #2a2a4a;border-radius:6px;background:#0f3460;color:#e0e0e0;font-size:14px;resize:vertical;font-family:inherit;margin-bottom:10px"><%= session.hr_notes || '' %></textarea>
+        <button type="submit" class="btn btn-small">Save Notes</button>
+      </form>
+    </div>
+
+    <!-- Typing Test Results -->
+    <% if (session.wpm != null || session.accuracy != null) { %>
+    <div style="background:#0f3460;border-radius:8px;padding:16px 20px;margin-bottom:20px">
+      <div style="font-size:12px;color:#888;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px">Typing Test Results</div>
+      <div style="display:flex;gap:24px">
+        <div style="text-align:center;flex:1">
+          <div style="font-size:32px;font-weight:700;color:#4a6cf7"><%= session.wpm || 0 %></div>
+          <div style="font-size:12px;color:#888;margin-top:4px">Words Per Minute</div>
+        </div>
+        <div style="text-align:center;flex:1">
+          <div style="font-size:32px;font-weight:700;color:#2ecc71"><%= session.accuracy || 0 %>%</div>
+          <div style="font-size:12px;color:#888;margin-top:4px">Accuracy</div>
+        </div>
+      </div>
+    </div>
+    <% } %>
+
+    <!-- Pre-screening Data -->
+    <% if (prescreening) { %>
+    <h2 style="margin-bottom:12px">Pre-screening</h2>
+    <% if (prescreening.resume_path) { %>
+    <div style="margin-bottom:16px">
+      <a href="/hr/sessions/<%= session.id %>/resume" class="btn btn-small" target="_blank">&#128065; View Resume</a>
+    </div>
+    <% } %>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+      <% const fields = [
+        ['Full Name', prescreening.full_name],
+        ['Date of Birth', prescreening.dob],
+        ['Phone', prescreening.phone],
+        ['Email', prescreening.email],
+        ['Location', prescreening.location],
+        ['Qualification', prescreening.qualification],
+        ['Institution', prescreening.institution],
+        ['Graduation Year', prescreening.graduation_year],
+        ['Last CTC', prescreening.last_ctc],
+        ['In-Hand Salary', prescreening.inhand_salary],
+        ['Expected Salary', prescreening.expected_salary],
+        ['Notice Period', prescreening.notice_period],
+        ['Job Switches', prescreening.job_switches],
+      ]; %>
+      <% fields.forEach(([label, value]) => { %>
+        <% if (value) { %>
+        <div style="background:#0f3460;border-radius:6px;padding:10px 14px">
+          <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px"><%= label %></div>
+          <div style="color:#e0e0e0;font-size:14px"><%= value %></div>
+        </div>
+        <% } %>
+      <% }); %>
+    </div>
+    <% const longFields = [
+      ['Work Experience', prescreening.work_experience],
+      ['Reason for Leaving', prescreening.reason_leaving],
+      ['Career Changes', prescreening.career_changes],
+    ]; %>
+    <% longFields.forEach(([label, value]) => { %>
+      <% if (value) { %>
+      <div style="background:#0f3460;border-radius:6px;padding:10px 14px;margin-bottom:12px">
+        <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px"><%= label %></div>
+        <div style="color:#e0e0e0;font-size:14px;white-space:pre-wrap;line-height:1.6"><%= value %></div>
+      </div>
+      <% } %>
+    <% }); %>
+    <% } %>
+
+    <!-- Q&A -->
+    <h2 style="margin-bottom:12px;margin-top:8px">Interview Q&amp;A</h2>
+    <% if (responses.length === 0) { %>
+      <p class="text-muted">No responses yet.</p>
+    <% } else { %>
+      <% responses.forEach((r) => { %>
+        <div style="margin-bottom:16px;padding:14px 16px;background:#0f3460;border-radius:8px">
+          <p style="color:#4a6cf7;font-weight:600;margin-bottom:6px;font-size:13px">Q<%= r.sort_order %>: <%= r.question_text %></p>
+          <p style="color:#e0e0e0;white-space:pre-wrap;font-size:14px;line-height:1.6"><%= r.response_text %></p>
+          <p style="color:#555;font-size:11px;margin-top:6px"><%= r.responded_at %></p>
+        </div>
+      <% }) %>
+    <% } %>
+    <% const unanswered = questions.filter(q => !responses.find(r => r.question_id === q.id)); %>
+    <% if (unanswered.length > 0) { %>
+      <h3 style="margin-bottom:8px;margin-top:16px;color:#888">Unanswered Questions</h3>
+      <% unanswered.forEach(q => { %>
+        <p style="color:#666;padding:4px 0;font-size:14px">Q<%= q.sort_order %>: <%= q.question_text %></p>
+      <% }) %>
+    <% } %>
+
+    <script>
+      function syncScore(slider, name) {
+        const num = document.getElementById('num-' + name);
+        if (num) num.value = slider.value;
+        recalc();
+      }
+      function syncScoreNum(input, name) {
+        let v = Math.max(0, Math.min(20, parseInt(input.value) || 0));
+        input.value = v;
+        const slider = document.querySelector(`input[type="range"][name="${name}"]`);
+        if (slider) slider.value = v;
+        recalc();
+      }
+      function recalc() {
+        const names = ['experience', 'skills', 'stability', 'communication', 'role_fit'];
+        let total = 0;
+        names.forEach(n => {
+          const el = document.querySelector(`input[type="range"][name="${n}"]`);
+          if (el) total += parseInt(el.value) || 0;
+        });
+        const el = document.getElementById('computed-total');
+        if (el) el.textContent = total + ' / 100';
+        const bar = document.getElementById('score-bar');
+        if (bar) bar.style.width = total + '%';
+      }
+      recalc();
+    </script>
+  </div>
+</body>
+</html>

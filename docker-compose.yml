@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - SESSION_SECRET=change-this-to-a-real-secret
+      - BASE_URL=http://localhost:3000
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - FROM_EMAIL=${FROM_EMAIL}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}

@@ -1,0 +1,181 @@
+<%- include('../layout-hr') %>
+    <div class="flex-between mb-20">
+      <h1><%= template.title %></h1>
+      <form method="POST" action="/hr/templates/<%= template.id %>/links">
+        <button type="submit" class="btn btn-small">+ Generate Link</button>
+      </form>
+    </div>
+
+    <% if (latestLink) { %>
+      <div style="margin-bottom:24px">
+        <div style="font-size:12px;color:#888;margin-bottom:6px">Latest link</div>
+        <div class="link-box">
+          <code id="link-latest"><%= baseUrl %>/interview/<%= latestLink.token %></code>
+          <button class="copy-btn" id="copy-latest"
+            onclick="copyLink('link-latest', 'copy-latest', '<%= latestLink.token %>')"
+            title="Copy link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- Candidates -->
+    <%
+      const activeSessions = sessions.filter(s => s.status !== 'pending');
+      const rankedMap = {};
+      ranked.forEach(r => { rankedMap[r.session_id] = r; });
+      const merged = [
+        ...ranked.map(r => ({ s: activeSessions.find(s => s.id === r.session_id), r })).filter(x => x.s),
+        ...activeSessions.filter(s => !rankedMap[s.id]).map(s => ({ s, r: null }))
+      ];
+    %>
+    <div style="margin-bottom:28px">
+      <div class="flex-between" style="margin-bottom:12px">
+        <h2 style="margin-bottom:0">Candidates <span style="color:#555;font-size:13px;font-weight:400">(<%= activeSessions.length %>)</span></h2>
+        <button class="btn btn-small" id="auto-score-btn" style="background:#2a4a2a;color:#2ecc71;border:1px solid #2ecc71"
+          onclick="autoScore()">
+          &#9889; Auto-Score All
+        </button>
+      </div>
+      <% if (ranked.length > 0) { %>
+        <div style="margin-bottom:8px">
+          <span style="color:#888;font-size:13px"><%= ranked.length %> scored &bull; <%= ranked.filter(r => r.shortlisted).length %> shortlisted</span>
+        </div>
+      <% } %>
+      <% if (merged.length > 0) { %>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:48px">Rank</th>
+              <th>Candidate</th>
+              <th>Score</th>
+              <th style="width:60px">Exp</th>
+              <th style="width:60px">Skills</th>
+              <th style="width:60px">Stab</th>
+              <th style="width:60px">Comm</th>
+              <th style="width:60px">Fit</th>
+              <th style="width:90px">Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% merged.forEach(({ s, r }) => { %>
+              <tr style="<%= r && r.rank <= 10 ? 'background:rgba(74,108,247,0.05)' : '' %>">
+                <td>
+                  <% if (!r) { %>
+                    <span style="color:#555;font-size:13px">—</span>
+                  <% } else if (r.rank === 1) { %>
+                    <span style="background:#f5a623;color:#000;font-weight:700;font-size:11px;padding:2px 7px;border-radius:4px">#1</span>
+                  <% } else if (r.rank === 2) { %>
+                    <span style="background:#aaa;color:#000;font-weight:700;font-size:11px;padding:2px 7px;border-radius:4px">#2</span>
+                  <% } else if (r.rank === 3) { %>
+                    <span style="background:#cd7f32;color:#fff;font-weight:700;font-size:11px;padding:2px 7px;border-radius:4px">#3</span>
+                  <% } else { %>
+                    <span style="color:#666;font-size:13px">#<%= r.rank %></span>
+                  <% } %>
+                </td>
+                <td>
+                  <div style="color:#e0e0e0;font-weight:500"><%= s.candidate_name || '—' %></div>
+                  <div style="color:#666;font-size:12px"><%= s.candidate_email || '' %></div>
+                </td>
+                <td>
+                  <% if (r) { %>
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <span style="font-weight:700;color:<%= r.effectiveTotal >= 70 ? '#2ecc71' : r.effectiveTotal >= 50 ? '#f5a623' : '#e74c3c' %>;font-size:15px"><%= r.effectiveTotal %></span>
+                      <span style="color:#555;font-size:12px">/100</span>
+                      <% if (r.override_total != null) { %><span style="font-size:11px;color:#888;font-style:italic">override</span><% } %>
+                    </div>
+                    <div style="background:#0f3460;border-radius:3px;height:4px;width:80px;margin-top:4px;overflow:hidden">
+                      <div style="height:100%;width:<%= r.effectiveTotal %>%;background:<%= r.effectiveTotal >= 70 ? '#2ecc71' : r.effectiveTotal >= 50 ? '#f5a623' : '#e74c3c' %>"></div>
+                    </div>
+                  <% } else { %>
+                    <span style="color:#555;font-size:13px">—</span>
+                  <% } %>
+                </td>
+                <td style="color:#b0b0b0;font-size:13px"><%= r ? r.experience : '' %></td>
+                <td style="color:#b0b0b0;font-size:13px"><%= r ? r.skills : '' %></td>
+                <td style="color:#b0b0b0;font-size:13px"><%= r ? r.stability : '' %></td>
+                <td style="color:#b0b0b0;font-size:13px"><%= r ? r.communication : '' %></td>
+                <td style="color:#b0b0b0;font-size:13px"><%= r ? r.role_fit : '' %></td>
+                <td>
+                  <% if (r && r.shortlisted) { %>
+                    <span style="color:#2ecc71;font-size:12px;font-weight:600">&#9733; Listed</span>
+                  <% } else if (r && r.rank <= 10) { %>
+                    <span style="color:#4a6cf7;font-size:12px">Top 10</span>
+                  <% } else { %>
+                    <span class="badge badge-<%= s.status %>"><%= s.status.replace(/_/g,' ') %></span>
+                  <% } %>
+                </td>
+                <td><a href="/hr/sessions/<%= s.id %>">View</a></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <p class="text-muted">No candidates have started an interview yet.</p>
+      <% } %>
+    </div>
+
+    <script>
+      const COPY_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+      const CHECK_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+
+      function getCopied() { return JSON.parse(localStorage.getItem('copied_links') || '{}'); }
+      function markCopied(token) {
+        const c = getCopied(); c[token] = true;
+        localStorage.setItem('copied_links', JSON.stringify(c));
+      }
+      function copyLink(linkId, btnId, token) {
+        navigator.clipboard.writeText(document.getElementById(linkId).textContent.trim()).then(() => {
+          markCopied(token);
+          document.getElementById(btnId).innerHTML = CHECK_ICON;
+          showToast('Link copied to clipboard');
+        });
+      }
+      function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg; t.classList.add('show');
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => t.classList.remove('show'), 2500);
+      }
+      async function autoScore() {
+        const btn = document.getElementById('auto-score-btn');
+        btn.disabled = true;
+        btn.textContent = 'Scoring\u2026';
+        try {
+          const res = await fetch('/hr/templates/<%= template.id %>/auto-score', { method: 'POST' });
+          const data = await res.json();
+          if (!res.ok) {
+            showToast(data.error || 'Scoring failed. Please try again.');
+            btn.disabled = false;
+            btn.innerHTML = '&#9889; Auto-Score All';
+            return;
+          }
+          window.location.href = '/hr/templates/<%= template.id %>?auto_scored=' + data.scored + '&failed=' + data.failed;
+        } catch (err) {
+          showToast('Scoring failed. Please try again.');
+          btn.disabled = false;
+          btn.innerHTML = '&#9889; Auto-Score All';
+        }
+      }
+      window.addEventListener('DOMContentLoaded', function() {
+        const copied = getCopied();
+        <% if (latestLink) { %>
+          if (copied['<%= latestLink.token %>']) document.getElementById('copy-latest').innerHTML = CHECK_ICON;
+        <% } %>
+        <% if (linked) { %> showToast('New interview link generated'); <% } %>
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('auto_scored') !== null) {
+          const n = parseInt(params.get('auto_scored')) || 0;
+          const f = parseInt(params.get('failed')) || 0;
+          const msg = f > 0 ? `${n} scored, ${f} failed` : `${n} candidate(s) scored by AI`;
+          showToast(msg);
+          history.replaceState(null, '', window.location.pathname);
+        }
+      });
+    </script>
+    </main>
+  </div>
+</body>
+</html>

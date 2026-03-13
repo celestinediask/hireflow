@@ -1,0 +1,22 @@
+<%- include('../layout') %>
+    <h1><%= template.title %></h1>
+    <p class="message-text">Welcome! Please enter your details to begin the interview.</p>
+
+    <% if (typeof error !== 'undefined') { %>
+      <div class="error"><%= error %></div>
+    <% } %>
+
+    <form method="POST" action="/interview/<%= session.token %>/start">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <button type="submit" class="btn">Start Interview</button>
+    </form>
+  </div>
+</body>
+</html>

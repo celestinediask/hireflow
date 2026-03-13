@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= template.title %> — Application</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    .wrap { width: 100%; max-width: 680px; }
+    .page-header { margin-bottom: 32px; }
+    .page-header h1 { color: #e0e0e0; font-size: 22px; margin-bottom: 6px; }
+    .page-header p { color: #888; font-size: 14px; }
+    .section {
+      background: #16213e;
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #4a6cf7;
+      margin-bottom: 16px;
+    }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-group { margin-bottom: 14px; }
+    .form-group:last-child { margin-bottom: 0; }
+    .form-group label {
+      display: block; margin-bottom: 5px;
+      font-size: 13px; color: #b0b0b0; font-weight: 500;
+    }
+    .form-group input, .form-group textarea {
+      width: 100%; padding: 9px 12px;
+      border: 1px solid #2a2a4a; border-radius: 6px;
+      font-size: 14px; background: #0f3460;
+      color: #e0e0e0; font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      outline: none; border-color: #4a6cf7;
+    }
+    .form-group textarea { resize: vertical; }
+    .file-input-wrap { position: relative; }
+    .file-input-wrap input[type="file"] {
+      opacity: 0; position: absolute; inset: 0; cursor: pointer; z-index: 2;
+    }
+    .file-label {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border: 1px dashed #4a6cf7; border-radius: 6px;
+      background: #0f3460; color: #888; font-size: 14px; cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .file-label.has-file { color: #2ecc71; border-color: #2ecc71; border-style: solid; }
+    .error {
+      background: #3d1a1a; color: #e74c3c;
+      padding: 10px 14px; border-radius: 6px; margin-bottom: 16px; font-size: 14px;
+    }
+    .submit-btn {
+      width: 100%; padding: 14px; background: #4a6cf7;
+      color: #fff; border: none; border-radius: 8px;
+      font-size: 16px; font-weight: 600; cursor: pointer;
+      transition: background 0.2s; margin-top: 8px;
+    }
+    .submit-btn:hover { background: #3b5de7; }
+    .req { color: #e74c3c; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="page-header">
+      <h1><%= template.title %></h1>
+      <p>Please complete all sections before starting the interview.</p>
+    </div>
+
+    <% if (error) { %><div class="error"><%= error %></div><% } %>
+
+    <form method="POST" action="/interview/<%= session.token %>/prescreening" id="prescreenForm">
+      <input type="hidden" name="resume_path" id="resumePath">
+
+      <!-- Resume -->
+      <div class="section">
+        <div class="section-title">Resume</div>
+        <div class="form-group">
+          <label>Upload Resume <span class="req">*</span> <span style="color:#666">(PDF only, max 10MB)</span></label>
+          <div class="file-input-wrap">
+            <input type="file" accept=".pdf,application/pdf" id="resumeInput">
+            <div class="file-label" id="fileLabel">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span id="fileLabelText">Click to upload PDF resume</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Personal Details -->
+      <div class="section">
+        <div class="section-title">Personal Details</div>
+        <div class="form-group">
+          <label>Full Name <span class="req">*</span></label>
+          <input type="text" name="full_name" required>
+        </div>
+        <div class="row">
+          <div class="form-group">
+            <label>Date of Birth</label>
+            <input type="date" name="dob">
+          </div>
+          <div class="form-group">
+            <label>Phone <span class="req">*</span></label>
+            <input type="tel" name="phone" required>
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group">
+            <label>Email <span class="req">*</span></label>
+            <input type="email" name="email" required>
+          </div>
+          <div class="form-group">
+            <label>Location / City</label>
+            <input type="text" name="location" placeholder="e.g. Bangkok, Thailand">
+          </div>
+        </div>
+      </div>
+
+      <!-- Education -->
+      <div class="section">
+        <div class="section-title">Education</div>
+        <div class="form-group">
+          <label>Highest Qualification</label>
+          <input type="text" name="qualification" placeholder="e.g. Bachelor of Computer Science">
+        </div>
+        <div class="row">
+          <div class="form-group">
+            <label>Institution</label>
+            <input type="text" name="institution" placeholder="University / College name">
+          </div>
+          <div class="form-group">
+            <label>Graduation Year</label>
+            <input type="text" name="graduation_year" placeholder="e.g. 2020">
+          </div>
+        </div>
+      </div>
+
+      <!-- Work Experience -->
+      <div class="section">
+        <div class="section-title">Work Experience</div>
+        <div class="form-group">
+          <label>Roles, Companies, Duration & Responsibilities</label>
+          <textarea name="work_experience" rows="5" placeholder="e.g.&#10;Software Engineer at ABC Corp (2021–2023): Developed REST APIs, led backend team of 4...&#10;Junior Dev at XYZ Ltd (2019–2021): Built React dashboards..."></textarea>
+        </div>
+      </div>
+
+      <!-- Compensation -->
+      <div class="section">
+        <div class="section-title">Compensation</div>
+        <div class="row">
+          <div class="form-group">
+            <label>Last CTC (Annual)</label>
+            <input type="text" name="last_ctc" placeholder="e.g. ₹12 LPA">
+          </div>
+          <div class="form-group">
+            <label>In-Hand Salary (Monthly)</label>
+            <input type="text" name="inhand_salary" placeholder="e.g. ₹75,000/month">
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group">
+            <label>Expected Salary</label>
+            <input type="text" name="expected_salary" placeholder="e.g. ₹15 LPA">
+          </div>
+          <div class="form-group">
+            <label>Notice Period</label>
+            <input type="text" name="notice_period" placeholder="e.g. 30 days / Immediate">
+          </div>
+        </div>
+      </div>
+
+      <!-- Career Stability -->
+      <div class="section">
+        <div class="section-title">Career Stability</div>
+        <div class="form-group">
+          <label>Reason for Leaving Current / Last Job</label>
+          <textarea name="reason_leaving" rows="2" placeholder="e.g. Looking for better growth opportunities..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Number of Job Switches</label>
+          <input type="text" name="job_switches" placeholder="e.g. 3 jobs in 5 years">
+        </div>
+        <div class="form-group">
+          <label>Career Changes / Domain Shifts</label>
+          <textarea name="career_changes" rows="2" placeholder="e.g. Switched from QA to development in 2020..."></textarea>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">Proceed to Interview &rarr;</button>
+    </form>
+  </div>
+
+  <script>
+    let resumeUploading = false;
+    let resumeUploaded = false;
+
+    // Upload immediately when file is selected — form submit stays synchronous
+    document.getElementById('resumeInput').addEventListener('change', async function() {
+      const label = document.getElementById('fileLabel');
+      const text = document.getElementById('fileLabelText');
+      const file = this.files[0];
+
+      if (!file) {
+        text.textContent = 'Click to upload PDF resume';
+        label.classList.remove('has-file');
+        document.getElementById('resumePath').value = '';
+        resumeUploaded = false;
+        return;
+      }
+
+      text.textContent = 'Uploading ' + file.name + '...';
+      label.classList.remove('has-file');
+      resumeUploading = true;
+      resumeUploaded = false;
+
+      try {
+        const urlRes = await fetch('/interview/<%= session.token %>/upload-url');
+        if (!urlRes.ok) throw new Error('Failed to get upload URL.');
+        const { signedUrl, path } = await urlRes.json();
+
+        const uploadRes = await fetch(signedUrl, {
+          method: 'PUT',
+          body: file,
+          headers: { 'Content-Type': 'application/pdf' },
+        });
+        if (!uploadRes.ok) throw new Error('Upload failed.');
+
+        document.getElementById('resumePath').value = path;
+        text.textContent = file.name + ' \u2713';
+        label.classList.add('has-file');
+        resumeUploaded = true;
+      } catch (err) {
+        text.textContent = 'Upload failed — please try again.';
+        document.getElementById('resumePath').value = '';
+        resumeUploaded = false;
+      }
+      resumeUploading = false;
+    });
+
+    document.getElementById('prescreenForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      if (resumeUploading) {
+        alert('Please wait for the resume to finish uploading.');
+        return;
+      }
+      if (!resumeUploaded) {
+        alert('Please upload your resume in PDF format.');
+        return;
+      }
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+      try {
+        const formData = new URLSearchParams(new FormData(this));
+        const res = await fetch('/interview/<%= session.token %>/prescreening', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: formData.toString(),
+          redirect: 'follow',
+        });
+        window.location.href = '/interview/<%= session.token %>';
+      } catch(err) {
+        btn.disabled = false;
+        btn.textContent = 'Proceed to Interview \u2192';
+        alert('Submission failed. Please try again.');
+      }
+    });
+  </script>
+</body>
+</html>

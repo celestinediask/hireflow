@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title : 'HR Dash' %></title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+    }
+    .app-wrap {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 200px;
+      flex-shrink: 0;
+      background: #0e1826;
+      border-right: 1px solid #1e2a3a;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+    }
+    .sidebar-user {
+      padding: 20px 16px 16px;
+      border-bottom: 1px solid #1e2a3a;
+    }
+    .sidebar-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: #4a6cf7;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+    .sidebar-username {
+      font-size: 13px;
+      color: #e0e0e0;
+      font-weight: 500;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .sidebar-logout {
+      font-size: 12px;
+      color: #666;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      font-family: inherit;
+      text-decoration: none;
+    }
+    .sidebar-logout:hover { color: #e74c3c; }
+    .sidebar-nav { flex: 1; padding: 12px 0; }
+    .nav-item {
+      display: block;
+      padding: 9px 20px;
+      color: #667;
+      color: #7a8aaa;
+      font-size: 13px;
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+      border-left: 3px solid transparent;
+    }
+    .nav-item:hover { background: #162030; color: #c0d0e0; text-decoration: none; }
+    .nav-item.active {
+      color: #e0e8ff;
+      background: #162030;
+      border-left-color: #4a6cf7;
+    }
+    .nav-label {
+      padding: 16px 20px 4px;
+      font-size: 10px;
+      color: #3a4a5a;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .nav-divider {
+      border: none;
+      border-top: 1px solid #1e2a3a;
+      margin: 8px 0;
+    }
+    .content {
+      flex: 1;
+      background: #16213e;
+      padding: 40px;
+      min-width: 0;
+    }
+    .content h1 { margin-bottom: 24px; color: #e0e0e0; font-size: 22px; }
+    .content h2 { margin-bottom: 16px; color: #e0e0e0; font-size: 18px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block; margin-bottom: 6px;
+      font-weight: 500; color: #b0b0b0; font-size: 14px;
+    }
+    .form-group input, .form-group textarea {
+      width: 100%; padding: 10px 12px;
+      border: 1px solid #2a2a4a; border-radius: 6px;
+      font-size: 15px; background: #0f3460;
+      color: #e0e0e0; transition: border-color 0.2s; font-family: inherit;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      outline: none; border-color: #4a6cf7;
+    }
+    .btn {
+      padding: 10px 20px; background: #4a6cf7;
+      color: #fff; border: none; border-radius: 6px;
+      font-size: 15px; cursor: pointer;
+      transition: background 0.2s; text-decoration: none; display: inline-block;
+    }
+    .btn:hover { background: #3b5de7; }
+    .btn-danger { background: #e74c3c; }
+    .btn-danger:hover { background: #c0392b; }
+    .btn-secondary { background: #555; }
+    .btn-secondary:hover { background: #666; }
+    .btn-small { padding: 6px 12px; font-size: 13px; }
+    .error {
+      background: #3d1a1a; color: #e74c3c;
+      padding: 10px 14px; border-radius: 6px;
+      margin-bottom: 16px; font-size: 14px;
+    }
+    .success {
+      background: #1a3d1a; color: #2ecc71;
+      padding: 10px 14px; border-radius: 6px;
+      margin-bottom: 16px; font-size: 14px;
+    }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+    th, td {
+      padding: 10px 12px; text-align: left;
+      border-bottom: 1px solid #2a2a4a; color: #b0b0b0; font-size: 14px;
+    }
+    th { color: #e0e0e0; font-weight: 600; }
+    a { color: #4a6cf7; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .mb-20 { margin-bottom: 20px; }
+    .mt-20 { margin-top: 20px; }
+    .text-muted { color: #888; font-size: 14px; }
+    .flex-between { display: flex; justify-content: space-between; align-items: center; }
+    .link-box {
+      background: #0f3460; border: 1px solid #2a2a4a;
+      border-radius: 6px; padding: 8px 12px; color: #e0e0e0;
+      font-size: 13px; word-break: break-all;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 10px; margin-bottom: 8px;
+    }
+    .link-box code { flex: 1; }
+    .badge {
+      display: inline-block; padding: 3px 8px;
+      border-radius: 4px; font-size: 12px; font-weight: 600;
+    }
+    .badge-pending { background: #555; color: #ccc; }
+    .badge-in_progress { background: #2a4a7a; color: #6ab0f3; }
+    .badge-completed { background: #1a3d1a; color: #2ecc71; }
+    .copy-btn {
+      background: none; border: none; cursor: pointer; color: #888;
+      padding: 4px 6px; border-radius: 4px; display: inline-flex;
+      align-items: center; transition: color 0.2s, background 0.2s; flex-shrink: 0;
+    }
+    .copy-btn:hover { color: #e0e0e0; background: #2a2a4a; }
+    .toast {
+      position: fixed; bottom: 28px; right: 28px;
+      background: #1a3d1a; color: #2ecc71;
+      padding: 12px 20px; border-radius: 8px; font-size: 14px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      opacity: 0; transform: translateY(10px);
+      transition: opacity 0.25s, transform 0.25s;
+      pointer-events: none; z-index: 999;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+  <div id="toast" class="toast"></div>
+  <div class="app-wrap">
+    <aside class="sidebar">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar"><%= user.username[0].toUpperCase() %></div>
+        <span class="sidebar-username"><%= user.username %></span>
+        <form method="POST" action="/hr/logout" style="display:inline">
+          <button type="submit" class="sidebar-logout">Logout</button>
+        </form>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="/hr" class="nav-item">&#8592; HR Dashboard</a>
+        <% if (typeof template !== 'undefined') { %>
+          <hr class="nav-divider">
+          <div class="nav-label">Template</div>
+          <a href="/hr/templates/<%= template.id %>"
+             class="nav-item <%= activePage === 'sessions' ? 'active' : '' %>">Sessions</a>
+          <a href="/hr/templates/<%= template.id %>/questions"
+             class="nav-item <%= activePage === 'questions' ? 'active' : '' %>">Questions</a>
+          <a href="/hr/templates/<%= template.id %>/links"
+             class="nav-item <%= activePage === 'links' ? 'active' : '' %>">All Links</a>
+        <% } %>
+      </nav>
+    </aside>
+    <main class="content">

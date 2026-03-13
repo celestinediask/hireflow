@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typing Test</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e; min-height: 100vh;
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+    }
+    .container {
+      background: #16213e; border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      width: 100%; max-width: 700px; padding: 32px;
+    }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .header h1 { color: #e0e0e0; font-size: 20px; }
+    .timer {
+      background: #0f3460; border-radius: 8px;
+      padding: 6px 14px; text-align: center;
+    }
+    .timer-label { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+    .timer-value { font-size: 20px; font-weight: 700; color: #4a6cf7; font-variant-numeric: tabular-nums; }
+    .timer.warning .timer-value { color: #e74c3c; }
+    .stats { display: flex; gap: 16px; margin-bottom: 20px; }
+    .stat { background: #0f3460; border-radius: 8px; padding: 10px 16px; text-align: center; flex: 1; }
+    .stat-value { font-size: 24px; font-weight: 700; color: #4a6cf7; }
+    .stat-label { font-size: 11px; color: #888; margin-top: 2px; }
+    .passage {
+      background: #0f3460; border-radius: 8px; padding: 16px 20px;
+      font-size: 16px; line-height: 1.8; color: #888; margin-bottom: 16px;
+      user-select: none; letter-spacing: 0.3px;
+      word-break: break-word; overflow-wrap: break-word; overflow: hidden;
+    }
+    .passage .correct { color: #2ecc71; }
+    .passage .wrong { color: #e74c3c; background: rgba(231,76,60,0.15); border-radius: 2px; }
+    .passage .cursor { border-left: 2px solid #4a6cf7; margin-left: -1px; animation: blink 1s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    .typing-area {
+      width: 100%; padding: 12px 16px;
+      border: 1px solid #2a2a4a; border-radius: 8px;
+      background: #0f3460; color: #e0e0e0;
+      font-size: 16px; font-family: inherit;
+      resize: none; height: 100px; line-height: 1.5;
+      transition: border-color 0.2s;
+    }
+    .typing-area:focus { outline: none; border-color: #4a6cf7; }
+    .submit-btn {
+      width: 100%; padding: 12px; background: #4a6cf7;
+      color: #fff; border: none; border-radius: 8px;
+      font-size: 16px; font-weight: 600; cursor: pointer;
+      transition: background 0.2s; margin-top: 12px;
+    }
+    .submit-btn:hover { background: #3b5de7; }
+    .hint { font-size: 13px; color: #666; text-align: center; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <h1>Typing Test</h1>
+        <p style="color:#888;font-size:13px;margin-top:4px">Type the passage below as accurately as possible</p>
+      </div>
+      <div class="timer" id="timer">
+        <div class="timer-label">Time Left</div>
+        <div class="timer-value" id="timer-value">--:--</div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-value" id="wpm-display">0</div><div class="stat-label">WPM</div></div>
+      <div class="stat"><div class="stat-value" id="acc-display">100%</div><div class="stat-label">Accuracy</div></div>
+      <div class="stat"><div class="stat-value" id="prog-display">0%</div><div class="stat-label">Progress</div></div>
+    </div>
+
+    <div class="passage" id="passage-display"></div>
+
+    <div>
+      <textarea class="typing-area" id="typing-input"
+        placeholder="Start typing here..." autocomplete="off" autocorrect="off"
+        autocapitalize="off" spellcheck="false"></textarea>
+      <button class="submit-btn" id="submit-btn">Submit Typing Test</button>
+    </div>
+    <p class="hint">The test auto-submits when the timer runs out.</p>
+  </div>
+
+  <script>
+    const passage = <%- JSON.stringify(typingText) %>;
+    let secondsLeft = <%= secondsLeft %>;
+    let typingStartTime = null;
+    let typingElapsed = 0;
+
+    const timerEl = document.getElementById('timer');
+    const timerValue = document.getElementById('timer-value');
+    const passageDisplay = document.getElementById('passage-display');
+    const typingInput = document.getElementById('typing-input');
+    const wpmDisplay = document.getElementById('wpm-display');
+    const accDisplay = document.getElementById('acc-display');
+    const progDisplay = document.getElementById('prog-display');
+
+    async function submitTyping() {
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+      const elapsed = typingElapsed || 1;
+      const body = new URLSearchParams({ typed_text: typingInput.value, elapsed_seconds: elapsed });
+      try {
+        await fetch('/interview/<%= session.token %>/typing', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: body.toString(),
+        });
+      } catch(e) {}
+      window.location.href = '/interview/<%= session.token %>';
+    }
+
+    // Render passage with character highlighting
+    function renderPassage(typed) {
+      let html = '';
+      for (let i = 0; i < passage.length; i++) {
+        const ch = passage[i] === ' ' ? '&nbsp;' : passage[i];
+        if (i < typed.length) {
+          if (typed[i] === passage[i]) html += `<span class="correct">${ch}</span>`;
+          else html += `<span class="wrong">${ch}</span>`;
+        } else if (i === typed.length) {
+          html += `<span class="cursor">${ch}</span>`;
+        } else {
+          html += `<span>${ch}</span>`;
+        }
+      }
+      passageDisplay.innerHTML = html;
+    }
+    renderPassage('');
+
+    // Timer
+    function formatTime(s) {
+      const m = Math.floor(s / 60);
+      const sec = s % 60;
+      return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+    }
+    timerValue.textContent = formatTime(secondsLeft);
+
+    const timerInterval = setInterval(() => {
+      secondsLeft--;
+      timerValue.textContent = formatTime(Math.max(0, secondsLeft));
+      if (secondsLeft <= 60) timerEl.classList.add('warning');
+      if (secondsLeft <= 0) {
+        clearInterval(timerInterval);
+        submitTyping();
+      }
+      // Update live WPM using main timer elapsed
+      if (typingStartTime) updateStats(typingInput.value);
+    }, 1000);
+
+    typingInput.addEventListener('input', () => {
+      if (!typingStartTime) typingStartTime = Date.now();
+      const typed = typingInput.value;
+      typingElapsed = Math.max(1, Math.floor((Date.now() - typingStartTime) / 1000));
+      renderPassage(typed);
+      updateStats(typed);
+    });
+
+    function updateStats(typed) {
+      const elapsed = typingStartTime
+        ? Math.max(1, (Date.now() - typingStartTime) / 1000)
+        : 1;
+      const wpm = Math.round((typed.length / 5) / (elapsed / 60));
+      let correct = 0;
+      for (let i = 0; i < Math.min(passage.length, typed.length); i++) {
+        if (passage[i] === typed[i]) correct++;
+      }
+      const acc = typed.length > 0
+        ? Math.round((correct / Math.min(passage.length, typed.length)) * 100)
+        : 100;
+      const prog = Math.min(100, Math.round((typed.length / passage.length) * 100));
+      wpmDisplay.textContent = wpm;
+      accDisplay.textContent = acc + '%';
+      progDisplay.textContent = prog + '%';
+    }
+
+    document.getElementById('submit-btn').addEventListener('click', submitTyping);
+  </script>
+</body>
+</html>

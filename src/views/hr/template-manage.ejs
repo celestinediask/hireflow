@@ -1,0 +1,149 @@
+<%- include('../layout-wide') %>
+    <style>
+      .copy-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #888;
+        padding: 4px 6px;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        transition: color 0.2s, background 0.2s;
+        flex-shrink: 0;
+      }
+      .copy-btn:hover { color: #e0e0e0; background: #2a2a4a; }
+      .section-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        user-select: none;
+        padding: 10px 0;
+        border-bottom: 1px solid #2a2a4a;
+      }
+      .section-toggle h2 { margin-bottom: 0; }
+      .chevron { color: #888; font-size: 13px; transition: transform 0.2s; }
+      .section-body { padding-top: 16px; }
+      .toast {
+        position: fixed;
+        bottom: 28px;
+        right: 28px;
+        background: #1a3d1a;
+        color: #2ecc71;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 0.25s, transform 0.25s;
+        pointer-events: none;
+        z-index: 999;
+      }
+      .toast.show { opacity: 1; transform: translateY(0); }
+    </style>
+
+    <div id="toast" class="toast"></div>
+
+    <div class="flex-between mb-20">
+      <h1><%= template.title %></h1>
+      <form method="POST" action="/hr/templates/<%= template.id %>/links">
+        <button type="submit" class="btn btn-small">+ Generate New Link</button>
+      </form>
+    </div>
+
+    <% if (pendingSessions.length > 0) { %>
+      <div style="margin-bottom:20px">
+        <div style="font-size:12px;color:#888;margin-bottom:6px">Latest link</div>
+        <div class="link-box">
+          <code id="link-latest"><%= baseUrl %>/interview/<%= pendingSessions[0].token %></code>
+          <button class="copy-btn" id="copy-latest" onclick="copyLink('link-latest', 'copy-latest')" title="Copy link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+      </div>
+    <% } %>
+
+    <div class="mb-20">
+      <div class="section-toggle" onclick="toggleSection('questions')">
+        <h2 style="font-size:18px">Questions <span style="color:#555;font-size:13px;font-weight:400">(<%= questions.length %>)</span></h2>
+        <span class="chevron" id="chevron-questions">&#9660;</span>
+      </div>
+      <div class="section-body" id="questions" style="display:none">
+        <table class="mb-20">
+          <thead><tr><th>#</th><th>Question</th></tr></thead>
+          <tbody>
+            <% questions.forEach((q, i) => { %>
+              <tr><td><%= i + 1 %></td><td style="color:#e0e0e0"><%= q.question_text %></td></tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mb-20">
+      <div class="section-toggle" onclick="toggleSection('links')">
+        <h2 style="font-size:18px">All Links <span style="color:#555;font-size:13px;font-weight:400">(<%= pendingSessions.length %>)</span></h2>
+        <span class="chevron" id="chevron-links">&#9660;</span>
+      </div>
+      <div class="section-body" id="links" style="display:none">
+        <% if (pendingSessions.length > 0) { %>
+          <% pendingSessions.forEach(s => { %>
+            <div class="link-box">
+              <code id="link-<%= s.id %>"><%= baseUrl %>/interview/<%= s.token %></code>
+              <button class="copy-btn" id="copy-<%= s.id %>" onclick="copyLink('link-<%= s.id %>', 'copy-<%= s.id %>')" title="Copy link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <p class="text-muted">No pending links.</p>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="mt-20 flex-between">
+      <a href="/hr/templates/<%= template.id %>">&larr; Back to sessions</a>
+      <form method="POST" action="/hr/templates/<%= template.id %>/delete" onsubmit="return confirm('Delete this template and all its data?')">
+        <button type="submit" class="btn btn-danger btn-small">Delete Template</button>
+      </form>
+    </div>
+
+    <script>
+      const COPY_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+      const CHECK_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+
+      function toggleSection(id) {
+        const body = document.getElementById(id);
+        const chevron = document.getElementById('chevron-' + id);
+        const open = body.style.display !== 'none';
+        body.style.display = open ? 'none' : 'block';
+        chevron.style.transform = open ? '' : 'rotate(-90deg)';
+      }
+
+      function copyLink(linkId, btnId) {
+        const text = document.getElementById(linkId).textContent.trim();
+        navigator.clipboard.writeText(text).then(() => {
+          document.getElementById(btnId).innerHTML = CHECK_ICON;
+          showToast('Link copied to clipboard');
+        });
+      }
+
+      function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => t.classList.remove('show'), 2500);
+      }
+
+      <% if (linked) { %>
+        window.addEventListener('DOMContentLoaded', function() {
+          showToast('New interview link generated');
+        });
+      <% } %>
+    </script>
+  </div>
+</body>
+</html>

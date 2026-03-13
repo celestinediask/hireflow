@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= template.title %></title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e; min-height: 100vh;
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+    }
+    .chat-container {
+      background: #16213e; border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      width: 100%; max-width: 700px;
+      display: flex; flex-direction: column; max-height: 90vh;
+    }
+    .chat-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid #2a2a4a;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .chat-header-left h1 { color: #e0e0e0; font-size: 17px; }
+    .chat-header-left p { color: #888; font-size: 12px; margin-top: 3px; }
+    .timer {
+      background: #0f3460; border-radius: 8px;
+      padding: 6px 14px; text-align: center; min-width: 80px;
+    }
+    .timer-label { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+    .timer-value { font-size: 20px; font-weight: 700; color: #4a6cf7; font-variant-numeric: tabular-nums; }
+    .timer.warning .timer-value { color: #e74c3c; }
+    .chat-messages {
+      flex: 1; overflow-y: auto; padding: 20px 24px;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .message {
+      max-width: 85%; padding: 12px 16px; border-radius: 12px;
+      font-size: 15px; line-height: 1.5; animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+    .message-question { background: #0f3460; color: #e0e0e0; align-self: flex-start; border-bottom-left-radius: 4px; }
+    .message-answer { background: #4a6cf7; color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+    .message-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; opacity: 0.7; }
+    .typing-indicator { display:none; align-self:flex-start; padding:12px 16px; background:#0f3460; border-radius:12px; border-bottom-left-radius:4px; }
+    .typing-indicator span { display:inline-block; width:8px; height:8px; border-radius:50%; background:#4a6cf7; margin:0 2px; animation:typing 1.2s infinite; }
+    .typing-indicator span:nth-child(2) { animation-delay:0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay:0.4s; }
+    @keyframes typing { 0%,60%,100%{opacity:0.3;transform:translateY(0)} 30%{opacity:1;transform:translateY(-4px)} }
+    .chat-input { padding: 16px 24px; border-top: 1px solid #2a2a4a; display: flex; gap: 10px; }
+    .chat-input textarea {
+      flex: 1; padding: 10px 14px; border: 1px solid #2a2a4a;
+      border-radius: 8px; background: #0f3460; color: #e0e0e0;
+      font-size: 15px; font-family: inherit; resize: none;
+      min-height: 44px; max-height: 120px;
+    }
+    .chat-input textarea:focus { outline: none; border-color: #4a6cf7; }
+    .chat-input button {
+      padding: 10px 20px; background: #4a6cf7; color: #fff;
+      border: none; border-radius: 8px; font-size: 15px;
+      cursor: pointer; transition: background 0.2s; align-self: flex-end;
+    }
+    .chat-input button:hover { background: #3b5de7; }
+    .chat-input button:disabled { background: #333; cursor: not-allowed; }
+    .progress { color: #888; font-size: 12px; text-align: center; padding: 8px; }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <h1><%= template.title %></h1>
+        <p>Hi <%= session.candidate_name %> — answer each question to proceed.</p>
+      </div>
+      <div class="timer" id="timer">
+        <div class="timer-label">Time Left</div>
+        <div class="timer-value" id="timer-value">--:--</div>
+      </div>
+    </div>
+
+    <div class="chat-messages" id="messages">
+      <% responses.forEach((r) => { %>
+        <div class="message message-question">
+          <div class="message-label">Question <%= r.sort_order %> of <%= questions.length %></div>
+          <%= r.question_text %>
+        </div>
+        <div class="message message-answer">
+          <div class="message-label">Your answer</div>
+          <%= r.response_text %>
+        </div>
+      <% }) %>
+
+      <% if (currentQuestion) { %>
+        <div class="message message-question" id="current-question">
+          <div class="message-label">Question <%= session.current_question_index + 1 %> of <%= questions.length %></div>
+          <span id="question-text"><%= currentQuestion.question_text %></span>
+        </div>
+      <% } %>
+
+      <div class="typing-indicator" id="typing">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+
+    <div id="progress" class="progress">
+      Question <span id="q-num"><%= session.current_question_index + 1 %></span> of <%= questions.length %>
+    </div>
+
+    <form class="chat-input" id="chat-form">
+      <textarea id="response-input" placeholder="Type your answer..." rows="1" required></textarea>
+      <button type="submit" id="send-btn">Send</button>
+    </form>
+  </div>
+
+  <script>
+    const token = '<%= session.token %>';
+    const totalQuestions = <%= questions.length %>;
+    let secondsLeft = <%= secondsLeft %>;
+
+    const timerEl = document.getElementById('timer');
+    const timerValue = document.getElementById('timer-value');
+    const messagesEl = document.getElementById('messages');
+    const form = document.getElementById('chat-form');
+    const input = document.getElementById('response-input');
+    const sendBtn = document.getElementById('send-btn');
+    const typingEl = document.getElementById('typing');
+    const qNumEl = document.getElementById('q-num');
+
+    // Timer
+    function formatTime(s) {
+      const m = Math.floor(s / 60);
+      const sec = s % 60;
+      return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+    }
+    timerValue.textContent = formatTime(secondsLeft);
+
+    const timerInterval = setInterval(() => {
+      secondsLeft--;
+      timerValue.textContent = formatTime(Math.max(0, secondsLeft));
+      if (secondsLeft <= 60) timerEl.classList.add('warning');
+      if (secondsLeft <= 0) {
+        clearInterval(timerInterval);
+        window.location.href = '/interview/' + token;
+      }
+    }, 1000);
+
+    input.addEventListener('input', () => {
+      input.style.height = 'auto';
+      input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+    });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.dispatchEvent(new Event('submit')); }
+    });
+
+    function scrollToBottom() { messagesEl.scrollTop = messagesEl.scrollHeight; }
+    scrollToBottom();
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+
+      const answerEl = document.createElement('div');
+      answerEl.className = 'message message-answer';
+      answerEl.innerHTML = '<div class="message-label">Your answer</div>' + escapeHtml(text);
+      messagesEl.insertBefore(answerEl, typingEl);
+
+      input.value = '';
+      input.style.height = 'auto';
+      sendBtn.disabled = true;
+      typingEl.style.display = 'block';
+      scrollToBottom();
+
+      try {
+        const res = await fetch('/interview/' + token + '/respond', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ response: text }),
+        });
+        const data = await res.json();
+
+        await new Promise(r => setTimeout(r, 600));
+        typingEl.style.display = 'none';
+
+        if (data.redirect) { window.location.href = data.redirect; return; }
+        if (data.typing) { clearInterval(timerInterval); window.location.href = '/interview/' + token; return; }
+
+        const qEl = document.createElement('div');
+        qEl.className = 'message message-question';
+        qEl.innerHTML = '<div class="message-label">Question ' + data.questionNumber + ' of ' + data.totalQuestions + '</div>' + escapeHtml(data.questionText);
+        messagesEl.insertBefore(qEl, typingEl);
+        qNumEl.textContent = data.questionNumber;
+        scrollToBottom();
+        sendBtn.disabled = false;
+        input.focus();
+      } catch (err) {
+        typingEl.style.display = 'none';
+        sendBtn.disabled = false;
+        alert('Something went wrong. Please try again.');
+      }
+    });
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+============================================================
+MOCK CANDIDATE DATA — INDIA
+============================================================
+
+--- SESSION ---
+candidate_name:   Rohit Verma
+candidate_email:  rohit.verma92@outlook.com
+status:           completed
+wpm:              47
+accuracy:         88
+
+--- PRE-SCREENING ---
+full_name:         Rohit Verma
+dob:               08-Nov-1992
+phone:             +91 91234 56789
+email:             rohit.verma92@outlook.com
+location:          Hyderabad, Telangana
+qualification:     MCA – Master of Computer Applications
+institution:       Osmania University, Hyderabad
+graduation_year:   2016
+last_ctc:          ₹9.5 LPA
+inhand_salary:     ₹72,000 / month
+expected_salary:   ₹13 LPA
+notice_period:     45 days
+job_switches:      3
+
+work_experience:
+  • Tata Consultancy Services (TCS), Hyderabad — Systems Engineer (Aug 2016 – Jun 2019)
+    Worked on Oracle ERP modules for a manufacturing client. Handled data
+    migration, PL/SQL scripting, and end-user training.
+
+  • Mphasis, Hyderabad — Software Developer (Jul 2019 – Feb 2021)
+    Developed Python-based ETL pipelines for a UK-based insurance client.
+    Reduced data processing time by 40% through query optimisation.
+
+  • Tech Mahindra, Hyderabad — Senior Developer (Mar 2021 – Present)
+    Building REST APIs using Django and PostgreSQL for a healthcare analytics
+    platform. Also responsible for CI/CD pipeline maintenance on AWS.
+
+reason_leaving:
+  My current project is winding down and the internal transfer options do not
+  align with my technical interests. I am looking for a product-focused role
+  where I can work on long-term impactful solutions rather than rotating
+  between short-term client projects.
+
+career_changes:
+  Started in ERP and database work at TCS, then moved to Python and data
+  engineering at Mphasis, and eventually shifted to full backend development
+  with Django at Tech Mahindra. Each move was intentional and helped me build
+  a broader engineering foundation.
+
+--- INTERVIEW Q&A ---
+
+Q1: What is fullstack?
+A:  Fullstack development refers to building both the client side and server
+    side of a web application. The frontend is the part users interact with in
+    the browser and the backend is the server, database, and business logic
+    running behind the scenes. A fullstack developer is comfortable working
+    across the entire system. With my background in both Django REST APIs and
+    some frontend work, I consider myself comfortable across the full stack
+    even though my depth is stronger on the backend side.
+
+Q2: What is the difference between frontend and backend?
+A:  Frontend deals with the presentation layer — HTML, CSS, JavaScript, and
+    frameworks like React or Angular. It runs in the user's browser and is
+    responsible for what the user sees and how they interact with the product.
+    Backend runs on a server and handles things like authentication, data
+    processing, business rules, and database access. It exposes APIs that the
+    frontend consumes. Both are equally important and need to be designed well
+    for an application to perform reliably.
+
+Q3: What is React?
+A:  React is an open source JavaScript library maintained by Meta for building
+    fast, interactive user interfaces. It introduced the concept of components —
+    self contained pieces of UI that manage their own state and can be composed
+    together. React uses a virtual DOM to minimise expensive real DOM updates,
+    which keeps the UI responsive. While my primary experience has been on the
+    backend with Python and Django, I have worked with React in internal tooling
+    projects and understand its core concepts including hooks and the component
+    lifecycle.
+
+--- TYPING TEST ---
+wpm:       47
+accuracy:  88%
+
+============================================================

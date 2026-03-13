@@ -1,0 +1,47 @@
+<%- include('../layout-wide') %>
+    <div class="flex-between mb-20">
+      <h1>HR Dashboard</h1>
+      <div>
+        <span style="color:#888; margin-right:12px;"><%= user.username %></span>
+        <form method="POST" action="/hr/logout" style="display:inline">
+          <button type="submit" class="btn btn-small btn-secondary">Logout</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="flex-between mb-20">
+      <h2>Interview Templates</h2>
+      <a href="/hr/templates/new" class="btn btn-small">+ New Template</a>
+    </div>
+
+    <% if (templates.length === 0) { %>
+      <p class="text-muted">No templates yet. Create your first interview template to get started.</p>
+    <% } else { %>
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Created</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% templates.forEach(t => { %>
+            <tr>
+              <td><a href="/hr/templates/<%= t.id %>"><%= t.title %></a></td>
+              <td><%= t.created_at %></td>
+              <td>
+                <form method="POST" action="/hr/templates/<%= t.id %>/delete" style="display:inline" onsubmit="return confirm('Delete this template?')">
+                  <button type="submit" title="Delete" style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:6px;background:#3d1a1a;color:#e74c3c;border:1px solid #5a2a2a;cursor:pointer;transition:background 0.2s" onmouseover="this.style.background='#5a1a1a'" onmouseout="this.style.background='#3d1a1a'">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</body>
+</html>

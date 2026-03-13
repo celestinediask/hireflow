@@ -1,0 +1,75 @@
+============================================================
+MOCK CANDIDATE DATA — INDIA
+============================================================
+
+--- SESSION ---
+candidate_name:   Priya Sharma
+candidate_email:  priya.sharma@gmail.com
+status:           completed
+wpm:              52
+accuracy:         91
+
+--- PRE-SCREENING ---
+full_name:         Priya Sharma
+dob:               15-Mar-1997
+phone:             +91 98765 43210
+email:             priya.sharma@gmail.com
+location:          Bengaluru, Karnataka
+qualification:     B.Tech – Computer Science
+institution:       Visvesvaraya Technological University (VTU)
+graduation_year:   2019
+last_ctc:          ₹6.2 LPA
+inhand_salary:     ₹48,000 / month
+expected_salary:   ₹9 LPA
+notice_period:     30 days
+job_switches:      2
+
+work_experience:
+  • Infosys Ltd, Bengaluru — Software Engineer (Jul 2019 – Mar 2022)
+    Worked on Java Spring Boot microservices for a US-based banking client.
+    Involved in requirement gathering, coding, unit testing, and deployment.
+
+  • Wipro Technologies, Bengaluru — Senior Software Engineer (Apr 2022 – Present)
+    Leading a team of 3 for backend API development using Node.js and PostgreSQL.
+    Responsible for code reviews, sprint planning, and client demos.
+
+reason_leaving:
+  Looking for better growth opportunities and a role that offers more ownership
+  and exposure to product development rather than service-based projects.
+
+career_changes:
+  Transitioned from a purely Java-based role at Infosys to a full-stack Node.js
+  role at Wipro, which broadened my backend and database skills significantly.
+
+--- INTERVIEW Q&A ---
+
+Q1: What is fullstack?
+A:  Fullstack means working on both the frontend and backend of an application.
+    The frontend is what users see in the browser and the backend handles server
+    logic, APIs, and databases. A fullstack developer can build an entire feature
+    end to end without depending on a separate team for either side. In my current
+    role at Wipro I work across both layers using React on the frontend and
+    Node.js with PostgreSQL on the backend.
+
+Q2: What is the difference between frontend and backend?
+A:  Frontend is everything the user directly sees and interacts with — the
+    layout, buttons, forms, and animations rendered in the browser using HTML,
+    CSS, and JavaScript. Backend is the server side that processes requests,
+    applies business logic, reads and writes to databases, and sends responses
+    back to the frontend. Neither works in isolation; the frontend calls the
+    backend through APIs and the backend returns data the frontend then displays.
+
+Q3: What is React?
+A:  React is a JavaScript library created by Facebook for building user
+    interfaces. It uses a component based model where you break the UI into
+    small, reusable pieces. React maintains a virtual DOM and only re-renders
+    the parts of the page that actually changed, which makes it very efficient.
+    I have used React for building dashboards and data-heavy interfaces and find
+    its ecosystem — hooks, context, and libraries like React Query — very
+    productive for real-world projects.
+
+--- TYPING TEST ---
+wpm:       52
+accuracy:  91%
+
+============================================================

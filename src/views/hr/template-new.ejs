@@ -1,0 +1,33 @@
+<%- include('../layout-wide') %>
+    <h1>Create Interview Template</h1>
+
+    <% if (typeof error !== 'undefined') { %>
+      <div class="error"><%= error %></div>
+    <% } %>
+
+    <form method="POST" action="/hr/templates" style="max-width:600px">
+      <div class="form-group">
+        <label>Template Title</label>
+        <input type="text" name="title" placeholder="e.g. Software Engineer Interview" required>
+      </div>
+      <div class="form-group">
+        <label>Interview Duration (minutes)</label>
+        <input type="number" name="duration_minutes" value="30" min="5" max="180" required>
+      </div>
+      <div class="form-group">
+        <label>Interview Questions <span style="color:#888;font-size:12px">(one per line)</span></label>
+        <textarea name="questions" rows="8" placeholder="Tell me about yourself.&#10;Why are you interested in this role?&#10;Describe a challenging project you worked on." required></textarea>
+      </div>
+      <div class="form-group">
+        <label>Typing Test Passage <span style="color:#888;font-size:12px">(leave blank for default)</span></label>
+        <textarea name="typing_text" rows="4" placeholder="Leave blank to use the default typing test passage."></textarea>
+      </div>
+      <button type="submit" class="btn">Create Template</button>
+    </form>
+
+    <div class="mt-20">
+      <a href="/hr">&larr; Back to dashboard</a>
+    </div>
+  </div>
+</body>
+</html>

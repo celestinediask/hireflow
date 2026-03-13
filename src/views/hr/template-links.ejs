@@ -1,0 +1,51 @@
+<%- include('../layout-hr') %>
+    <h1 class="mb-20">All Links</h1>
+
+    <% if (pendingSessions.length === 0) { %>
+      <p class="text-muted">No links generated yet. Go to Sessions and click "+ Generate Link".</p>
+    <% } else { %>
+      <% pendingSessions.forEach(s => { %>
+        <div class="link-box">
+          <code id="link-<%= s.id %>"><%= baseUrl %>/interview/<%= s.token %></code>
+          <button class="copy-btn" id="copy-<%= s.id %>"
+            onclick="copyLink('link-<%= s.id %>', 'copy-<%= s.id %>', '<%= s.token %>')"
+            title="Copy link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+      <% }) %>
+    <% } %>
+
+    <script>
+      const COPY_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+      const CHECK_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+
+      function getCopied() { return JSON.parse(localStorage.getItem('copied_links') || '{}'); }
+      function markCopied(token) {
+        const c = getCopied(); c[token] = true;
+        localStorage.setItem('copied_links', JSON.stringify(c));
+      }
+      function copyLink(linkId, btnId, token) {
+        navigator.clipboard.writeText(document.getElementById(linkId).textContent.trim()).then(() => {
+          markCopied(token);
+          document.getElementById(btnId).innerHTML = CHECK_ICON;
+          showToast('Link copied to clipboard');
+        });
+      }
+      function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg; t.classList.add('show');
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => t.classList.remove('show'), 2500);
+      }
+      window.addEventListener('DOMContentLoaded', function() {
+        const copied = getCopied();
+        <% pendingSessions.forEach(s => { %>
+          if (copied['<%= s.token %>']) document.getElementById('copy-<%= s.id %>').innerHTML = CHECK_ICON;
+        <% }) %>
+      });
+    </script>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<%- include('../layout') %>
+    <h1 style="text-align:center">Interview Complete!</h1>
+    <p class="message-text">Thank you, <strong style="color:#e0e0e0"><%= session.candidate_name %></strong>!<br>Your interview for "<strong style="color:#e0e0e0"><%= template.title %></strong>" has been submitted.</p>
+
+    <% if (session.wpm != null || session.accuracy != null) { %>
+    <div style="background:#0f3460;border-radius:8px;padding:20px;margin-bottom:20px">
+      <div style="font-size:12px;color:#888;text-align:center;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.8px">Typing Test Results</div>
+      <div style="display:flex;gap:12px">
+        <div style="flex:1;text-align:center">
+          <div style="font-size:36px;font-weight:700;color:#4a6cf7"><%= session.wpm || 0 %></div>
+          <div style="font-size:12px;color:#888;margin-top:4px">WPM</div>
+        </div>
+        <div style="flex:1;text-align:center">
+          <div style="font-size:36px;font-weight:700;color:#2ecc71"><%= session.accuracy || 0 %>%</div>
+          <div style="font-size:12px;color:#888;margin-top:4px">Accuracy</div>
+        </div>
+      </div>
+    </div>
+    <% } %>
+
+    <p class="message-text" style="font-size:13px;color:#888">Our team will review your responses and get back to you shortly.</p>
+  </div>
+</body>
+</html>

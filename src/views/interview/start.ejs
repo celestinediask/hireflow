@@ -1,0 +1,34 @@
+<%- include('../layout') %>
+    <h1><%= template.title %></h1>
+    <p class="message-text">Hi <strong style="color:#e0e0e0"><%= session.candidate_name %></strong>, your application has been received.</p>
+
+    <div style="background:#0f3460;border-radius:8px;padding:20px;margin-bottom:24px;text-align:center">
+      <div style="font-size:13px;color:#888;margin-bottom:8px">Interview Duration</div>
+      <div style="font-size:36px;font-weight:700;color:#4a6cf7"><%= template.duration_minutes %> <span style="font-size:18px;font-weight:400;color:#888">minutes</span></div>
+      <div style="font-size:13px;color:#888;margin-top:8px">The timer starts when you click Start Interview</div>
+    </div>
+
+    <div style="background:#16213e;border:1px solid #2a2a4a;border-radius:8px;padding:16px;margin-bottom:24px;font-size:14px;color:#b0b0b0;line-height:1.7">
+      <strong style="color:#e0e0e0">What to expect:</strong><br>
+      1. Answer each interview question by typing your response<br>
+      2. After all questions, you will take a typing speed test<br>
+      3. The timer counts down across both sections<br>
+      4. Your interview will auto-submit when time runs out
+    </div>
+
+    <button class="btn" id="startBtn" style="width:100%;padding:14px;font-size:16px;font-weight:600">
+      Start Interview
+    </button>
+  </div>
+</body>
+<script>
+  document.getElementById('startBtn').addEventListener('click', async function() {
+    this.disabled = true;
+    this.textContent = 'Starting...';
+    try {
+      await fetch('/interview/<%= session.token %>/begin', { method: 'POST' });
+    } catch(e) {}
+    window.location.href = '/interview/<%= session.token %>';
+  });
+</script>
+</html>
