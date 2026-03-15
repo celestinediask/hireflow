@@ -1,15 +1,15 @@
 <%- include('../layout') %>
     <h1><%= template.title %></h1>
-    <p class="message-text">Hi <strong style="color:#e0e0e0"><%= session.candidate_name %></strong>, your application has been received.</p>
+    <p class="message-text">Hi <strong style="color:#f0f0f5"><%= session.candidate_name %></strong>, your application has been received.</p>
 
-    <div style="background:#0f3460;border-radius:8px;padding:20px;margin-bottom:24px;text-align:center">
-      <div style="font-size:13px;color:#888;margin-bottom:8px">Interview Duration</div>
-      <div style="font-size:36px;font-weight:700;color:#4a6cf7"><%= template.duration_minutes %> <span style="font-size:18px;font-weight:400;color:#888">minutes</span></div>
-      <div style="font-size:13px;color:#888;margin-top:8px">The timer starts when you click Start Interview</div>
+    <div style="background:#1e1e2d;border:1px solid #2a2a3d;border-radius:10px;padding:20px;margin-bottom:24px;text-align:center">
+      <div style="font-size:12px;color:#9898b8;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.8px">Interview Duration</div>
+      <div style="font-size:36px;font-weight:700;color:#a08af9"><%= template.duration_minutes %> <span style="font-size:18px;font-weight:400;color:#9898b8">minutes</span></div>
+      <div style="font-size:13px;color:#9898b8;margin-top:8px">The timer starts when you click Start Interview</div>
     </div>
 
-    <div style="background:#16213e;border:1px solid #2a2a4a;border-radius:8px;padding:16px;margin-bottom:24px;font-size:14px;color:#b0b0b0;line-height:1.7">
-      <strong style="color:#e0e0e0">What to expect:</strong><br>
+    <div style="background:#1e1e2d;border:1px solid #2a2a3d;border-radius:10px;padding:16px;margin-bottom:24px;font-size:14px;color:#c8c8dc;line-height:1.7">
+      <strong style="color:#f0f0f5">What to expect:</strong><br>
       1. Answer each interview question by typing your response<br>
       2. After all questions, you will take a typing speed test<br>
       3. The timer counts down across both sections<br>

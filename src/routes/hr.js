@@ -258,6 +258,37 @@ router.post('/sessions/:id/score', async (req, res) => {
   }
 });
 
+// Delete session
+router.post('/sessions/:id/delete', async (req, res) => {
+  try {
+    const session = await queries.getSessionById(req.params.id);
+    if (!session) return res.status(404).render('error', { message: 'Session not found.' });
+    const template = await queries.getTemplateById(session.template_id);
+    if (!template || template.created_by !== req.user.id) {
+      return res.status(403).render('error', { message: 'Access denied.' });
+    }
+    const { pool } = require('../db');
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query('DELETE FROM interview_responses WHERE session_id = $1', [session.id]);
+      await client.query('DELETE FROM candidate_prescreening WHERE session_id = $1', [session.id]);
+      await client.query('DELETE FROM candidate_scores WHERE session_id = $1', [session.id]);
+      await client.query('DELETE FROM interview_sessions WHERE id = $1', [session.id]);
+      await client.query('COMMIT');
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
+    res.redirect(303, `/hr/templates/${template.id}`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).render('error', { message: 'Something went wrong.' });
+  }
+});
+
 // Save HR notes
 router.post('/sessions/:id/hr-notes', async (req, res) => {
   try {
