@@ -162,6 +162,19 @@ router.post('/hr/:id', async (req, res) => {
   }
 });
 
+// Login as HR user
+router.get('/hr/:id/login-as', async (req, res) => {
+  try {
+    const hrUser = await queries.findById(req.params.id);
+    if (!hrUser || hrUser.role !== 'hr') return res.status(404).render('error', { message: 'HR user not found.' });
+    req.session.hrUserId = hrUser.id;
+    res.redirect('/hr');
+  } catch (err) {
+    console.error(err);
+    res.status(500).render('error', { message: 'Something went wrong.' });
+  }
+});
+
 // Delete HR user
 router.post('/hr/:id/delete', async (req, res) => {
   try {
