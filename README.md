@@ -21,6 +21,7 @@ An automated candidate screening platform that lets HR teams conduct structured 
 - **Auto-score all** — Score all completed candidates in one click
 - **Candidate ranking** — Ranked leaderboard with score breakdown per session
 - **HR notes** — Add private notes to any candidate session
+- **Dark / light theme** — Toggle between dark and light mode, preference saved across sessions
 - **Email verification** — Account signup includes email verification via Resend
 
 ## Tech Stack
@@ -50,8 +51,8 @@ An automated candidate screening platform that lets HR teams conduct structured 
 
 1. **Clone and install**
    ```bash
-   git clone <repo-url>
-   cd hrbot
+   git clone https://github.com/celestinediask/hireflow.git
+   cd hireflow
    npm install
    ```
 
@@ -70,8 +71,7 @@ An automated candidate screening platform that lets HR teams conduct structured 
 
 3. **Start the server**
    ```bash
-   export $(grep -v '^#' .env | xargs)
-   NODE_ENV=production npm start
+   ./start.sh
    ```
 
    The app will create all database tables on first run, then listen on [http://localhost:3000](http://localhost:3000).
