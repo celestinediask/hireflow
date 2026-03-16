@@ -1,8 +1,11 @@
-# HR Interview Bot
+# HireFlow
 
-![Candidates table with ranked scores](screenshots/1.webp)
-![Candidate prescreening form](screenshots/2.webp)
-![Live interview chat](screenshots/3.webp)
+![Admin dashboard](screenshots/admin.webp)
+![Candidates dark theme](screenshots/candidates-dark-theme.webp)
+![Candidates light theme](screenshots/candidates-light-theme.webp)
+![Prescreening form](screenshots/form.webp)
+![Live interview chat](screenshots/interview.webp)
+![Typing test](screenshots/typing-test.webp)
 
 An automated candidate screening platform that lets HR teams conduct structured interviews via shareable links — no scheduling required. Candidates fill in a prescreening form, answer interview questions, and complete a typing test. GPT-4o mini scores each candidate automatically across five dimensions.
 
