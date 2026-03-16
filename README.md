@@ -7,7 +7,7 @@
 ![Live interview chat](screenshots/interview.webp)
 ![Typing test](screenshots/typing-test.webp)
 
-An automated candidate screening platform that lets HR teams conduct structured interviews via shareable links — no scheduling required. Candidates fill in a prescreening form, answer interview questions, and complete a typing test. GPT-4o mini scores each candidate automatically across five dimensions.
+An automated candidate screening platform that lets HR teams conduct structured interviews via shareable links — no scheduling required. Candidates fill in a prescreening form, answer interview questions, and complete a typing test. An AI model scores each candidate automatically across five dimensions.
 
 ## Features
 
@@ -17,7 +17,7 @@ An automated candidate screening platform that lets HR teams conduct structured 
 - **Prescreening form** — Collects resume (PDF), personal details, education, work history, and salary expectations
 - **Live interview chat** — Timed, one-question-at-a-time format with a countdown timer
 - **Typing test** — Measures WPM and accuracy as part of the assessment
-- **AI scoring** — GPT-4o mini scores candidates on Experience, Skills, Stability, Communication, and Role Fit (out of 100)
+- **AI scoring** — Scores candidates on Experience, Skills, Stability, Communication, and Role Fit (out of 100)
 - **Auto-score all** — Score all completed candidates in one click
 - **Candidate ranking** — Ranked leaderboard with score breakdown per session
 - **HR notes** — Add private notes to any candidate session
@@ -33,7 +33,7 @@ An automated candidate screening platform that lets HR teams conduct structured 
 | Templating | EJS |
 | Database | PostgreSQL (Supabase) |
 | Auth | bcrypt + express-session |
-| AI Scoring | OpenAI GPT-4o mini |
+| AI Scoring | OpenAI API (configurable) |
 | File uploads | Multer |
 | Email | Resend |
 | Deployment | Vercel / Docker |
@@ -110,7 +110,7 @@ src/
 │   ├── hr.js           # Templates, sessions, scoring
 │   └── interview.js    # Candidate-facing interview flow
 ├── utils/
-│   └── scorer.js       # OpenAI GPT-4o mini scoring logic
+│   └── scorer.js       # AI scoring logic
 └── views/              # EJS templates
     ├── admin/
     ├── hr/
@@ -127,7 +127,7 @@ src/
 
 ## AI Scoring
 
-Each completed interview is scored by GPT-4o mini on five factors (20 points each):
+Each completed interview is scored by AI on five factors (20 points each):
 
 | Factor | What it measures |
 |---|---|
